@@ -2,7 +2,7 @@
 """
 This script fetches live data from the blackrock servers.
 
-The script is meannt to be called from cron, with no arguments
+The script is meant to be called from cron, with no arguments
 
 blackrock_data_fetcher.py
 

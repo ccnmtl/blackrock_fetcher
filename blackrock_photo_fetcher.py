@@ -2,7 +2,7 @@
 """
 This script fetches webcam photos from the blackrock servers.
 
-The script is meannt to be called from cron,
+The script is meant to be called from cron,
 
 blackrock_photo_fetcher.py
 
