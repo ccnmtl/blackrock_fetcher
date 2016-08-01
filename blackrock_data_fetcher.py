@@ -22,6 +22,7 @@ import os
 import os.path
 import datetime
 import pexpect
+from blackrock_data_processor import process_dendrometer_data
 
 try:
     from local_settings import (
@@ -33,7 +34,7 @@ try:
         SCP, PURGE_OLDER_THAN, DEBUG,
     )
 except ImportError:
-    from local_settings import (
+    from example_settings import (
         SFTP_HOST, SFTP_PORT, SFTP_USER, SFTP_PASSWD,
         OL_REMOTE_IMAGES_DIRECTORY, RT_REMOTE_IMAGES_DIRECTORY,
         REMOTE_CSV_DIRECTORY, REMOTE_MOUNT_MISERY_DIRECTORY,
@@ -47,17 +48,13 @@ def create_local_directories(today):
     """
     Create local directories for today's date, if they don't yet exist
     """
-    # year = today.strftime("%Y")
-    # month = today.strftime("%m")
-    # day = today.strftime("%d")
-    # hour = today.strftime("%H")
+    d = "%s/%s" % (LOCAL_DIRECTORY_BASE, today.strftime("%Y/%m/%d/%H"))
+    d = os.path.normpath(d)
 
-    dir = "%s/%s" % (LOCAL_DIRECTORY_BASE, today.strftime("%Y/%m/%d/%H"))
+    if not os.path.exists(d):
+        os.makedirs(d)
 
-    if not os.path.exists(dir):
-        os.makedirs(dir)
-
-    return dir
+    return d
 
 
 def fetch_files(remote_dir, local_dir):
@@ -70,7 +67,6 @@ def fetch_files(remote_dir, local_dir):
         print("cmd: %s" % (cmd))
 
     try:
-        # import pdb; pdb.set_trace()
         child = pexpect.spawn(cmd)
         child.expect('password:')
         child.sendline(SFTP_PASSWD)
@@ -88,12 +84,12 @@ def main(argv=None):
 
     local_dir = create_local_directories(today)
 
-    # print remote_path, local_path
     fetch_files(OL_REMOTE_IMAGES_DIRECTORY, local_dir)
     fetch_files(RT_REMOTE_IMAGES_DIRECTORY, local_dir)
     fetch_files(REMOTE_CSV_DIRECTORY, local_dir)
     fetch_files(REMOTE_MOUNT_MISERY_DIRECTORY, local_dir)
     fetch_files(REMOTE_WHITE_OAK_DIRECTORY, local_dir)
+    process_dendrometer_data(local_dir, 'Mnt_Misery_Table20.csv')
 
     listdir = os.listdir(local_dir)
 

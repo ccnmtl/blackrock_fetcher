@@ -1,5 +1,4 @@
 VE ?= ./ve
-MANAGE ?= ./manage.py
 FLAKE8 ?= $(VE)/bin/flake8
 REQUIREMENTS ?= requirements.txt
 SYS_PYTHON ?= python
@@ -9,7 +8,7 @@ PYPI_URL ?= https://pypi.ccnmtl.columbia.edu/
 WHEEL_VERSION ?= 0.29.0
 VIRTUALENV ?= virtualenv.py
 SUPPORT_DIR ?= requirements/virtualenv_support/
-MAX_COMPLEXITY ?= 10
+MAX_COMPLEXITY ?= 9
 INTERFACE ?= localhost
 PY_DIRS ?= *.py --exclude virtualenv.py
 
