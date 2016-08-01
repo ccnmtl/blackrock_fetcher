@@ -44,16 +44,13 @@ def create_local_directories(today):
     """
     Create local directories for today's date, if they don't yet exist
     """
-    # year = today.strftime("%Y")
-    # month = today.strftime("%m")
-    # day = today.strftime("%d")
+    d = "%s/%s" % (LOCAL_WEBCAM_DIRECTORY_BASE, today.strftime("%Y/%m/%d"))
+    d = os.path.normpath(d)
 
-    dir = "%s/%s" % (LOCAL_WEBCAM_DIRECTORY_BASE, today.strftime("%Y/%m/%d"))
+    if not os.path.exists(d):
+        os.makedirs(d)
 
-    if not os.path.exists(dir):
-        os.makedirs(dir)
-
-    return dir
+    return d
 
 
 def fetch_image(remote_path, local_path):
@@ -66,7 +63,6 @@ def fetch_image(remote_path, local_path):
         print("cmd: %s" % (cmd))
 
     try:
-        # import pdb; pdb.set_trace()
         child = pexpect.spawn(cmd)
         child.expect('password:')
         child.sendline(SFTP_PASSWD)
@@ -77,7 +73,6 @@ def fetch_image(remote_path, local_path):
 
 
 def main(argv=None):
-    # import pdb; pdb.set_trace()
     today = datetime.datetime.today()
 
     local_dir = create_local_directories(today)
@@ -90,7 +85,6 @@ def main(argv=None):
     remote_path = "%s/%s" % (REMOTE_DIRECTORY, REMOTE_FILENAME)
     local_path = "%s/%s" % (local_dir, new_filename)
     local_thumb_path = "%s/%s" % (local_dir, new_thumbname)
-    # print remote_path, local_path
     fetch_image(remote_path, local_path)
 
     # create a thumbnail
