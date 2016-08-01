@@ -2,9 +2,9 @@ import csv
 import os.path
 
 try:
-    from local_settings import PROCESSED_DATA_DIR
+    from local_settings import PROCESSED_DATA_DIR, LOCAL_DIRECTORY_BASE
 except ImportError:
-    from example_settings import PROCESSED_DATA_DIR
+    from example_settings import PROCESSED_DATA_DIR, LOCAL_DIRECTORY_BASE
 
 
 def process_dendrometer_data(path, filename):
@@ -22,10 +22,6 @@ def process_dendrometer_data(path, filename):
 
     # Remove columns that we don't want
     for row in rows:
-        del row[0]
-        del row[0]
-        del row[0]
-        del row[0]
         del row[1]
         del row[1]
         del row[1]
@@ -37,9 +33,12 @@ def process_dendrometer_data(path, filename):
         del row[3]
         del row[4]
         del row[4]
+        del row[4]
         del row[5]
         del row[5]
-        del row[5]
+        del row[6]
+        del row[6]
+        del row[6]
 
     outfile = os.path.join(PROCESSED_DATA_DIR, filename)
     with open(outfile, 'w') as csvfile:
@@ -48,3 +47,7 @@ def process_dendrometer_data(path, filename):
             writer.writerow(row)
 
     print('Wrote to {}'.format(outfile))
+
+if __name__ == '__main__':
+    path = os.path.join(LOCAL_DIRECTORY_BASE, 'current')
+    process_dendrometer_data(path, 'Mnt_Misery_Table20.csv')
