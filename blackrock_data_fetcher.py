@@ -22,7 +22,7 @@ import os
 import os.path
 import datetime
 import pexpect
-from blackrock_data_processor import process
+from blackrock_data_processor import process_dendrometer_data
 
 try:
     from local_settings import (
@@ -89,7 +89,7 @@ def main(argv=None):
     fetch_files(REMOTE_CSV_DIRECTORY, local_dir)
     fetch_files(REMOTE_MOUNT_MISERY_DIRECTORY, local_dir)
     fetch_files(REMOTE_WHITE_OAK_DIRECTORY, local_dir)
-    process(os.path.join(local_dir, 'Mnt_Misery_Table20.csv'))
+    process_dendrometer_data(local_dir, 'Mnt_Misery_Table20.csv')
 
     listdir = os.listdir(local_dir)
 
