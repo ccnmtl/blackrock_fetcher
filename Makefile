@@ -10,7 +10,7 @@ VIRTUALENV ?= virtualenv.py
 SUPPORT_DIR ?= requirements/virtualenv_support/
 MAX_COMPLEXITY ?= 9
 INTERFACE ?= localhost
-PY_DIRS ?= *.py --exclude virtualenv.py
+PY_DIRS ?= *.py tests --exclude virtualenv.py
 
 $(PY_SENTINAL): $(REQUIREMENTS) $(VIRTUALENV) $(SUPPORT_DIR)*
 	rm -rf $(VE)
@@ -22,3 +22,6 @@ $(PY_SENTINAL): $(REQUIREMENTS) $(VIRTUALENV) $(SUPPORT_DIR)*
 
 flake8: $(PY_SENTINAL)
 	$(FLAKE8) $(PY_DIRS) --max-complexity=$(MAX_COMPLEXITY)
+
+test: $(PY_SENTINAL)
+	$(VE)/bin/python -m tests.test_data_processor

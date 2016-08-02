@@ -1,10 +1,25 @@
 import csv
+import math
 import os.path
 
 try:
     from local_settings import PROCESSED_DATA_DIR, LOCAL_DIRECTORY_BASE
 except ImportError:
     from example_settings import PROCESSED_DATA_DIR, LOCAL_DIRECTORY_BASE
+
+
+def calc_avg(a):
+    """Returns the average of the given list of numbers."""
+    return sum(a) / float(len(a))
+
+
+def calc_std_dev(a):
+    """Returns the standard deviation of the given list of numbers."""
+    mean = calc_avg(a)
+    distances = []
+    for e in a:
+        distances.append(abs(e - mean) ** 2)
+    return math.sqrt(sum(distances) / float(len(distances)))
 
 
 def process_dendrometer_data(path, filename):
@@ -40,12 +55,15 @@ def process_dendrometer_data(path, filename):
         del row[6]
         del row[6]
 
-        # Calculate site average
         if i == 0:
             row.append('Site AVG')
         else:
-            avg = (row[1] + row[2] + row[3] + row[4] + row[5]) / 5
-            row.append(avg)
+            row.append(calc_avg([row[1], row[2], row[3], row[4], row[5]]))
+
+        if i == 0:
+            row.append('Site STD DEV')
+        else:
+            row.append(calc_std_dev([row[1], row[2], row[3], row[4], row[5]]))
 
     outfile = os.path.join(PROCESSED_DATA_DIR, filename)
     with open(outfile, 'w') as csvfile:
