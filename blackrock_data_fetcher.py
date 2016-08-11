@@ -117,7 +117,7 @@ def main(argv=None):
     try:
         os.remove(symlink)
     except:
-        pass
+        print('couldn\'t remove symlink: %s' % symlink)
 
     os.symlink(local_dir, symlink)
 
