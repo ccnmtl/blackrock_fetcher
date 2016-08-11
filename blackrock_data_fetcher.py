@@ -110,7 +110,7 @@ def main(argv=None):
 
     # make sure all the images are world readable
     for f in listdir:
-        os.chmod(local_dir + "/" + f, 0o644)
+        os.chmod(local_dir + "/" + f, 0644)
 
     # make a symlink to the most current directory of images
     symlink = symlink = LOCAL_DIRECTORY_BASE + "/current"
