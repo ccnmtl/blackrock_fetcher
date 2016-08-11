@@ -113,7 +113,7 @@ def main(argv=None):
         os.chmod(local_dir + "/" + f, 0o644)
 
     # make a symlink to the most current directory of images
-    symlink = symlink = LOCAL_DIRECTORY_BASE + "/current"
+    symlink = LOCAL_DIRECTORY_BASE + "/current"
     try:
         os.remove(symlink)
     except:
