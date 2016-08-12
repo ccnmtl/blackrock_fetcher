@@ -96,8 +96,8 @@ def main(argv=None):
           ])
 
     # make sure the images are world readable
-    os.chmod(local_path, 0o644)
-    os.chmod(local_thumb_path, 0o644)
+    os.chmod(local_path, 0644)
+    os.chmod(local_thumb_path, 0644)
 
     # create a symlink to the most current image
     symlink = LOCAL_WEBCAM_DIRECTORY_BASE + "/current.jpg"
