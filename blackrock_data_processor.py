@@ -90,7 +90,7 @@ def process_dendrometer_data(path, filename):
         for row in rows:
             writer.writerow(row)
 
-    print('Wrote to {}'.format(outfile))
+    print('Wrote to %s' % outfile)
 
 
 if __name__ == '__main__':
