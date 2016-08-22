@@ -57,6 +57,27 @@ def create_local_directories(today):
     return d
 
 
+def fetch_file(remote_dir, local_dir):
+    if DEBUG:
+        print("Fetching %s to %s" % (remote_dir, local_dir))
+
+    cmd = '%s -P %s %s@%s:"%s" %s ' % (
+        SCP, SFTP_PORT, SFTP_USER, SFTP_HOST, remote_dir, local_dir)
+    if DEBUG:
+        print("cmd: %s" % (cmd))
+
+    try:
+        child = pexpect.spawn(cmd)
+        child.expect('password:')
+        child.sendline(SFTP_PASSWD)
+        # make sure to extend the timeout for long download times. 5
+        # min should do it.
+        child.expect(pexpect.EOF, timeout=600)
+    except:
+        print("SCP Error:", sys.exc_info()[0])
+        raise Exception()
+
+
 def fetch_files(remote_dir, local_dir):
     if DEBUG:
         print("Fetching %s to %s" % (remote_dir, local_dir))
@@ -89,6 +110,15 @@ def main(argv=None):
     fetch_files(REMOTE_CSV_DIRECTORY, local_dir)
     fetch_files(REMOTE_MOUNT_MISERY_DIRECTORY, local_dir)
     fetch_files(REMOTE_WHITE_OAK_DIRECTORY, local_dir)
+
+    # There is a Lowland.csv file in both REMOTE_CSV_DIRECTORY
+    # and OL_REMOTE_IMAGES_DIRECTORY. Only the one in
+    # OL_REMOTE_IMAGES_DIRECTORY is automatically updated,
+    # so make sure we always end up with that one.
+    fetch_file(
+        os.path.join(OL_REMOTE_IMAGES_DIRECTORY, 'Lowland.csv'),
+        local_dir)
+
     process_dendrometer_data(local_dir, 'Mnt_Misery_Table20.csv')
 
     listdir = os.listdir(local_dir)
