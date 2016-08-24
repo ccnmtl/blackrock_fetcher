@@ -40,14 +40,12 @@ def process_dendrometer_data(path, filename):
     for i, row in enumerate(rows):
         #
         # The incoming CSV's header row looks like this:
-        #   "TIMESTAMP", "RECORD", "BattV_MIN", "ProgSig",
-        #   "Red_Oak_1_AVG", "Red_Oak_1_MAX", "Red_Oak_1_MIN",
-        #   "Red_Oak_1_STD", "Red_Oak_2_AVG", "Red_Oak_2_MAX",
-        #   "Red_Oak_2_MIN", "Red_Oak_2_STD", "Red_Oak_3_AVG",
-        #   "Red_Oak_3_MAX", "Red_Oak_3_MIN", "Red_Oak_3_STD",
-        #   "Red_Oak_4_AVG", "Red_Oak_4_MAX", "Red_Oak_4_MIN",
-        #   "Red_Oak_5_AVG", "Red_Oak_5_MAX", "Red_Oak_5_MIN",
-        #   "Red_Oak_5_STD"
+        #   "TIMESTAMP", "RECORD", "Battery_Volt_MIN", "ProgSig",
+        #   "Red_Oak_1_AVG", "Red_Oak_1_MAX", "Red_Oak_1_MIN", "Red_Oak_1_STD",
+        #   "Red_Oak_2_AVG", "Red_Oak_2_MAX", "Red_Oak_2_MIN", "Red_Oak_2_STD",
+        #   "Red_Oak_3_AVG", "Red_Oak_3_MAX", "Red_Oak_3_MIN", "Red_Oak_3_STD",
+        #   "Red_Oak_4_AVG", "Red_Oak_4_MAX", "Red_Oak_4_MIN", "Red_Oak_4_STD",
+        #   "Red_Oak_5_AVG", "Red_Oak_5_MAX", "Red_Oak_5_MIN", "Red_Oak_5_STD"
         #
         # Here's the columns we want to filter to:
         #   TIMESTAMP, Red_Oak_1_AVG, Red_Oak_2_AVG, Red_Oak_3_AVG,
@@ -68,6 +66,7 @@ def process_dendrometer_data(path, filename):
         del row[4]
         del row[4]
         del row[4]
+        del row[5]
         del row[5]
         del row[5]
         del row[6]
