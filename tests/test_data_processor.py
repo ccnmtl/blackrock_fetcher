@@ -54,6 +54,9 @@ class TestFilterColumns(unittest.TestCase):
             [3, 4],
         ])
 
+        newrows = filter_columns([], rows)
+        self.assertEqual(newrows, [[], [], [], [], []])
+
 
 if __name__ == '__main__':
     unittest.main()
