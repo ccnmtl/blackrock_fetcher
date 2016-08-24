@@ -26,7 +26,7 @@ RT_EXPECTED_FILES_SET = set(
      'RT_Precip-7Day.png', 'RT_Precip-24Hr.png', 'RT_Precip-30Day.png',
      'RT_Wind-7Day.png', 'RT_Wind-24Hr.png', 'RT_Wind-30Day.png'))
 
-LOCAL_DIRECTORY_BASE = ''
+LOCAL_DIRECTORY_BASE = '/tmp/'
 
 SCP = '/usr/bin/scp'
 CONVERT = '/usr/bin/convert'
