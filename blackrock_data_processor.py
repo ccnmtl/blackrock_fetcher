@@ -22,6 +22,28 @@ def calc_std_dev(a):
     return math.sqrt(sum(distances) / float(len(distances)))
 
 
+def filter_columns(keep_columns, rows):
+    """Filter CSV-style data based on a list of column names.
+
+    Returns a list of lists.
+    """
+    newrows = []
+    keep_indices = []
+
+    # Find the column indices to keep.
+    for i, name in enumerate(rows[0]):
+        if name in keep_columns:
+            keep_indices.append(i)
+
+    for i, row in enumerate(rows):
+        newrow = []
+        for keep_idx in keep_indices:
+            newrow.append(row[keep_idx])
+        newrows.append(newrow)
+
+    return newrows
+
+
 def process_dendrometer_data(path, filename):
     fname = os.path.join(path, filename)
     rows = []
@@ -37,56 +59,43 @@ def process_dendrometer_data(path, filename):
     del rows[1]
     del rows[1]
 
-    for i, row in enumerate(rows):
-        #
-        # The incoming CSV's header row looks like this:
-        #   "TIMESTAMP", "RECORD", "Battery_Volt_MIN", "ProgSig",
-        #   "Red_Oak_1_AVG", "Red_Oak_1_MAX", "Red_Oak_1_MIN", "Red_Oak_1_STD",
-        #   "Red_Oak_2_AVG", "Red_Oak_2_MAX", "Red_Oak_2_MIN", "Red_Oak_2_STD",
-        #   "Red_Oak_3_AVG", "Red_Oak_3_MAX", "Red_Oak_3_MIN", "Red_Oak_3_STD",
-        #   "Red_Oak_4_AVG", "Red_Oak_4_MAX", "Red_Oak_4_MIN", "Red_Oak_4_STD",
-        #   "Red_Oak_5_AVG", "Red_Oak_5_MAX", "Red_Oak_5_MIN", "Red_Oak_5_STD"
-        #
-        # Here's the columns we want to filter to:
-        #   TIMESTAMP, Red_Oak_1_AVG, Red_Oak_2_AVG, Red_Oak_3_AVG,
-        #   Red_Oak_4_AVG, Red_Oak_5_AVG
-        #
-        # To do that, I'm removing all the columns around the columns of
-        # interest.
-        #
-        del row[1]
-        del row[1]
-        del row[1]
-        del row[2]
-        del row[2]
-        del row[2]
-        del row[3]
-        del row[3]
-        del row[3]
-        del row[4]
-        del row[4]
-        del row[4]
-        del row[5]
-        del row[5]
-        del row[5]
-        del row[6]
-        del row[6]
-        del row[6]
+    #
+    # The incoming CSV's header row looks like this:
+    #   "TIMESTAMP", "RECORD", "Battery_Volt_MIN", "ProgSig",
+    #   "Red_Oak_1_AVG", "Red_Oak_1_MAX", "Red_Oak_1_MIN", "Red_Oak_1_STD",
+    #   "Red_Oak_2_AVG", "Red_Oak_2_MAX", "Red_Oak_2_MIN", "Red_Oak_2_STD",
+    #   "Red_Oak_3_AVG", "Red_Oak_3_MAX", "Red_Oak_3_MIN", "Red_Oak_3_STD",
+    #   "Red_Oak_4_AVG", "Red_Oak_4_MAX", "Red_Oak_4_MIN", "Red_Oak_4_STD",
+    #   "Red_Oak_5_AVG", "Red_Oak_5_MAX", "Red_Oak_5_MIN", "Red_Oak_5_STD"
+    #
+    # Here's the columns we want to filter to:
+    #   TIMESTAMP, Red_Oak_1_AVG, Red_Oak_2_AVG, Red_Oak_3_AVG,
+    #   Red_Oak_4_AVG, Red_Oak_5_AVG
+    #
+    keep_columns = [
+        'TIMESTAMP', 'Red_Oak_1_AVG', 'Red_Oak_2_AVG', 'Red_Oak_3_AVG',
+        'Red_Oak_4_AVG', 'Red_Oak_5_AVG'
+    ]
+    newrows = filter_columns(keep_columns, rows)
+
+    for i, row in enumerate(newrows):
+        newrow = newrows[i]
+        if i == 0:
+            newrow.append('Site AVG')
+        else:
+            newrow.append(calc_avg([newrow[1], newrow[2], newrow[3],
+                                    newrow[4], newrow[5]]))
 
         if i == 0:
-            row.append('Site AVG')
+            newrow.append('Site STD DEV')
         else:
-            row.append(calc_avg([row[1], row[2], row[3], row[4], row[5]]))
-
-        if i == 0:
-            row.append('Site STD DEV')
-        else:
-            row.append(calc_std_dev([row[1], row[2], row[3], row[4], row[5]]))
+            newrow.append(calc_std_dev([newrow[1], newrow[2], newrow[3],
+                                        newrow[4], newrow[5]]))
 
     outfile = os.path.join(PROCESSED_DATA_DIR, filename)
     with open(outfile, 'w') as csvfile:
         writer = csv.writer(csvfile, quoting=csv.QUOTE_NONNUMERIC)
-        for row in rows:
+        for row in newrows:
             writer.writerow(row)
 
     print('Wrote to %s' % outfile)
