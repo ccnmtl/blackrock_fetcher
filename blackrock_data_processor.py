@@ -1,6 +1,7 @@
 import csv
 import math
 import os.path
+from datetime import datetime
 
 try:
     from local_settings import PROCESSED_DATA_DIR, LOCAL_DIRECTORY_BASE
@@ -40,6 +41,34 @@ def filter_columns(keep_columns, rows):
         for keep_idx in keep_indices:
             newrow.append(row[keep_idx])
         newrows.append(newrow)
+
+    return newrows
+
+
+def filter_rows(rows, start_dt=None, end_dt=None,
+                time_fmt='%Y-%m-%d %H:%M:%S'):
+    """Return only rows in the given timeframe.
+
+    Assumes that the first column of each row is a timestamp of
+    the format time_fmt.
+    """
+    if start_dt is None and end_dt is None:
+        return rows
+
+    newrows = []
+    for row in rows:
+        dt = row[0]
+        try:
+            dt = datetime.strptime(dt, time_fmt)
+        except ValueError:
+            newrows.append(row)
+            continue
+
+        test1 = start_dt is None or start_dt <= dt
+        test2 = end_dt is None or end_dt >= dt
+
+        if test1 and test2:
+            newrows.append(row)
 
     return newrows
 
@@ -98,7 +127,7 @@ def process_dendrometer_data(path, filename):
     print('Wrote to %s' % outfile)
 
 
-def process_environmental_data(path, filename):
+def process_environmental_data(path, filename, start_dt=None, end_dt=None):
     fname = os.path.join(path, filename)
     rows = []
     with open(fname, 'r') as csvfile:

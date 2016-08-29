@@ -1,6 +1,7 @@
 import unittest
+from datetime import datetime
 from blackrock_data_processor import (
-    calc_avg, calc_std_dev, filter_columns
+    calc_avg, calc_std_dev, filter_columns, filter_rows
 )
 
 
@@ -56,6 +57,36 @@ class TestFilterColumns(unittest.TestCase):
 
         newrows = filter_columns([], rows)
         self.assertEqual(newrows, [[], [], [], [], []])
+
+
+class TestFilterRows(unittest.TestCase):
+    def test_filter_rows(self):
+        rows = [
+            ['timestamp', 'b', 'c', 'd'],
+            ['2016-06-20 11:00:00', 5, 4, 7],
+            ['2016-07-15 07:03:30', 5, 4, 2],
+            ['2016-08-20 13:01:00', 5, 6, 1],
+            ['2016-08-21 15:00:00', 2, 3, 4],
+        ]
+
+        newrows = filter_rows(rows)
+        self.assertEqual(newrows, rows)
+
+        newrows = filter_rows(rows, start_dt=datetime(2016, 8, 20, 12, 30))
+        self.assertEqual(newrows, [
+            ['timestamp', 'b', 'c', 'd'],
+            ['2016-08-20 13:01:00', 5, 6, 1],
+            ['2016-08-21 15:00:00', 2, 3, 4],
+        ])
+
+        newrows = filter_rows(
+            rows,
+            start_dt=datetime(2016, 8, 20, 12, 30),
+            end_dt=datetime(2016, 8, 20, 14, 30))
+        self.assertEqual(newrows, [
+            ['timestamp', 'b', 'c', 'd'],
+            ['2016-08-20 13:01:00', 5, 6, 1],
+        ])
 
 
 if __name__ == '__main__':
