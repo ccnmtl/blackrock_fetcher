@@ -161,6 +161,7 @@ def process_environmental_data(path, filename, start_dt=None, end_dt=None):
         'SoilM_5cm', 'AvgPAR_Den'
     ]
     newrows = filter_columns(keep_columns, rows)
+    newrows = filter_rows(newrows, start_dt, end_dt)
 
     outfile = os.path.join(PROCESSED_DATA_DIR, filename)
     with open(outfile, 'w') as csvfile:
@@ -174,4 +175,5 @@ def process_environmental_data(path, filename, start_dt=None, end_dt=None):
 if __name__ == '__main__':
     path = os.path.join(LOCAL_DIRECTORY_BASE, 'current')
     process_dendrometer_data(path, 'Mnt_Misery_Table20.csv')
-    process_environmental_data(path, 'Lowland.csv')
+    process_environmental_data(path, 'Lowland.csv',
+                               start_dt=datetime(2016, 8, 17, 8))
