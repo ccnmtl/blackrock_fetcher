@@ -20,7 +20,7 @@ Jonah Bossewitch, CCNMTL
 import sys
 import os
 import os.path
-import datetime
+from datetime import datetime
 import pexpect
 from blackrock_data_processor import (
     process_dendrometer_data, process_environmental_data
@@ -103,7 +103,7 @@ def fetch_files(remote_dir, local_dir):
 
 def main(argv=None):
     # import pdb; pdb.set_trace()
-    today = datetime.datetime.today()
+    today = datetime.today()
 
     local_dir = create_local_directories(today)
 
@@ -122,7 +122,8 @@ def main(argv=None):
         local_dir)
 
     process_dendrometer_data(local_dir, 'Mnt_Misery_Table20.csv')
-    process_environmental_data(local_dir, 'Lowland.csv')
+    process_environmental_data(local_dir, 'Lowland.csv',
+                               start_dt=datetime(2016, 8, 17, 8))
 
     listdir = os.listdir(local_dir)
 
