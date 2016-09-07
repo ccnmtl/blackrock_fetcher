@@ -103,6 +103,7 @@ def process_dendrometer_data(path, filename):
         'Red_Oak_4_AVG', 'Red_Oak_5_AVG'
     ]
     newrows = filter_columns(keep_columns, rows)
+    newrows = filter_rows(newrows, datetime(2016, 9, 1))
 
     for i, row in enumerate(newrows):
         newrow = newrows[i]
