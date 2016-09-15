@@ -1,7 +1,8 @@
 import unittest
 from datetime import datetime
 from blackrock_data_processor import (
-    calc_avg, calc_std_dev, filter_columns, filter_rows
+    calc_avg, calc_std_dev, filter_columns, filter_rows,
+    match_replace
 )
 
 
@@ -87,6 +88,32 @@ class TestFilterRows(unittest.TestCase):
             ['timestamp', 'b', 'c', 'd'],
             ['2016-08-20 13:01:00', 5, 6, 1],
         ])
+
+
+class TestMatchReplace(unittest.TestCase):
+    def test_match_replace(self):
+        rows = [
+            ['timestamp', 'Red_Oak_1', 'Red_Oak_2', 'Red_Oak_3'],
+            ['2016-06-20 11:00:00', 5, 4, 7],
+            ['2016-07-15 07:03:30', 5, 4, 2],
+            ['2016-08-20 13:01:00', 5, 6, 1],
+            ['2016-08-21 15:00:00', 2, 3, 4],
+        ]
+
+        newrows = match_replace(rows, 'Red_Oak', 'Red_Oak')
+        self.assertEqual(newrows, rows)
+
+        newrows = match_replace(rows, 'Red_Oak', 'White_Oak')
+        self.assertEqual(newrows, [
+            ['timestamp', 'White_Oak_1', 'White_Oak_2', 'White_Oak_3'],
+            ['2016-06-20 11:00:00', 5, 4, 7],
+            ['2016-07-15 07:03:30', 5, 4, 2],
+            ['2016-08-20 13:01:00', 5, 6, 1],
+            ['2016-08-21 15:00:00', 2, 3, 4],
+        ])
+
+        newrows = match_replace([], 'Red_Oak', 'White_Oak')
+        self.assertEqual(newrows, [])
 
 
 if __name__ == '__main__':
