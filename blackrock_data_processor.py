@@ -73,7 +73,22 @@ def filter_rows(rows, start_dt=None, end_dt=None,
     return newrows
 
 
-def process_dendrometer_data(path, filename):
+def match_replace(rows, oldname, newname):
+    """Replace every instance of oldname with newname within the rows."""
+    newrows = []
+    for row in rows:
+        newrow = []
+        for cell in row:
+            try:
+                cell = cell.replace(oldname, newname)
+            except AttributeError:
+                pass
+            newrow.append(cell)
+        newrows.append(newrow)
+    return newrows
+
+
+def process_dendrometer_data(path, filename, rename_trees=None):
     fname = os.path.join(path, filename)
     rows = []
     with open(fname, 'r') as csvfile:
@@ -103,7 +118,9 @@ def process_dendrometer_data(path, filename):
         'Red_Oak_4_AVG', 'Red_Oak_5_AVG'
     ]
     newrows = filter_columns(keep_columns, rows)
-    newrows = filter_rows(newrows, datetime(2016, 9, 10))
+    newrows = filter_rows(newrows, datetime(2016, 9, 10, 17))
+    if rename_trees:
+        newrows = match_replace(newrows, 'Red_Oak', rename_trees)
 
     for i, row in enumerate(newrows):
         newrow = newrows[i]
@@ -176,6 +193,7 @@ def process_environmental_data(path, filename, start_dt=None, end_dt=None):
 if __name__ == '__main__':
     path = os.path.join(LOCAL_DIRECTORY_BASE, 'current')
     process_dendrometer_data(path, 'Mnt_Misery_Table20.csv')
-    process_dendrometer_data(path, 'White_Oak_Table20.csv')
+    process_dendrometer_data(path, 'White_Oak_Table20.csv',
+                             rename_trees='White_Oak')
     process_environmental_data(path, 'Lowland.csv',
-                               start_dt=datetime(2016, 9, 10))
+                               start_dt=datetime(2016, 9, 10, 17))
