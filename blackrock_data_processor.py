@@ -176,5 +176,6 @@ def process_environmental_data(path, filename, start_dt=None, end_dt=None):
 if __name__ == '__main__':
     path = os.path.join(LOCAL_DIRECTORY_BASE, 'current')
     process_dendrometer_data(path, 'Mnt_Misery_Table20.csv')
+    process_dendrometer_data(path, 'White_Oak_Table20.csv')
     process_environmental_data(path, 'Lowland.csv',
-                               start_dt=datetime(2016, 8, 17, 8))
+                               start_dt=datetime(2016, 9, 1))
