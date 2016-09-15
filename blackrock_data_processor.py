@@ -103,7 +103,7 @@ def process_dendrometer_data(path, filename):
         'Red_Oak_4_AVG', 'Red_Oak_5_AVG'
     ]
     newrows = filter_columns(keep_columns, rows)
-    newrows = filter_rows(newrows, datetime(2016, 9, 1))
+    newrows = filter_rows(newrows, datetime(2016, 9, 10))
 
     for i, row in enumerate(newrows):
         newrow = newrows[i]
@@ -178,4 +178,4 @@ if __name__ == '__main__':
     process_dendrometer_data(path, 'Mnt_Misery_Table20.csv')
     process_dendrometer_data(path, 'White_Oak_Table20.csv')
     process_environmental_data(path, 'Lowland.csv',
-                               start_dt=datetime(2016, 9, 1))
+                               start_dt=datetime(2016, 9, 10))
