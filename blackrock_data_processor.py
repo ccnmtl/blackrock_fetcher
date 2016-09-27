@@ -118,9 +118,12 @@ def process_dendrometer_data(path, filename, rename_trees=None):
         'Red_Oak_4_AVG', 'Red_Oak_5_AVG'
     ]
     newrows = filter_columns(keep_columns, rows)
-    newrows = filter_rows(newrows, datetime(2016, 9, 10, 17))
+
     if rename_trees:
+        newrows = filter_rows(newrows, datetime(2016, 9, 16, 15))
         newrows = match_replace(newrows, 'Red_Oak', rename_trees)
+    else:
+        newrows = filter_rows(newrows, datetime(2016, 9, 10, 17))
 
     for i, row in enumerate(newrows):
         newrow = newrows[i]
