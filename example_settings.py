@@ -28,7 +28,7 @@ RT_EXPECTED_FILES_SET = set(
 
 LOCAL_DIRECTORY_BASE = '/tmp/'
 
-SCP = '/usr/bin/scp'
+SCP = '/usr/bin/sftp'
 CONVERT = '/usr/bin/convert'
 
 PURGE_OLDER_THAN = '+30'

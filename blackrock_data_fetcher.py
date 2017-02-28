@@ -63,8 +63,8 @@ def fetch_file(remote_dir, local_dir):
     if DEBUG:
         print("Fetching %s to %s" % (remote_dir, local_dir))
 
-    cmd = '%s -P %s %s@%s:"%s" %s ' % (
-        SCP, SFTP_PORT, SFTP_USER, SFTP_HOST, remote_dir, local_dir)
+    cmd = '%s %s@%s:"%s" %s ' % (
+        SCP, SFTP_USER, SFTP_HOST, remote_dir, local_dir)
     if DEBUG:
         print("cmd: %s" % (cmd))
 
@@ -84,8 +84,8 @@ def fetch_files(remote_dir, local_dir):
     if DEBUG:
         print("Fetching %s to %s" % (remote_dir, local_dir))
 
-    cmd = '%s -r -P %s %s@%s:"%s/*" %s ' % (
-        SCP, SFTP_PORT, SFTP_USER, SFTP_HOST, remote_dir, local_dir)
+    cmd = '%s %s@%s:"%s/*" %s ' % (
+        SCP, SFTP_USER, SFTP_HOST, remote_dir, local_dir)
     if DEBUG:
         print("cmd: %s" % (cmd))
 
