@@ -1,7 +1,6 @@
 # Copy this file to local_settings.py and customize.
 
 SFTP_HOST = ''
-SFTP_PORT = 22
 SFTP_USER = ''
 SFTP_PASSWD = ''
 
