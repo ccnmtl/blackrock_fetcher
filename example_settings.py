@@ -1,7 +1,6 @@
 # Copy this file to local_settings.py and customize.
 
 SFTP_HOST = ''
-SFTP_PORT = 22
 SFTP_USER = ''
 SFTP_PASSWD = ''
 
@@ -28,7 +27,7 @@ RT_EXPECTED_FILES_SET = set(
 
 LOCAL_DIRECTORY_BASE = '/tmp/'
 
-SCP = '/usr/bin/scp'
+SCP = '/usr/bin/sftp'
 CONVERT = '/usr/bin/convert'
 
 PURGE_OLDER_THAN = '+30'
