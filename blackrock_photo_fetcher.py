@@ -62,14 +62,10 @@ def fetch_image(remote_path, local_path):
     if DEBUG:
         print("cmd: %s" % (cmd))
 
-    try:
-        child = pexpect.spawn(cmd)
-        child.expect('password:')
-        child.sendline(SFTP_PASSWD)
-        child.expect(pexpect.EOF)
-    except:
-        print("SCP Error:", sys.exc_info()[0])
-        raise
+    child = pexpect.spawn(cmd)
+    child.expect('password:')
+    child.sendline(SFTP_PASSWD)
+    child.expect(pexpect.EOF)
 
 
 def main(argv=None):
@@ -106,7 +102,7 @@ def main(argv=None):
     try:
         os.remove(symlink)
         os.remove(symlink_thumb)
-    except:
+    except OSError:
         pass
 
     os.symlink(local_path, symlink)
