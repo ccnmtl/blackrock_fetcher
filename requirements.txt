@@ -1,4 +1,4 @@
-pexpect==4.2.0
+pexpect==4.2.1
 ptyprocess==0.5.1
 
 flake8==2.6.2
