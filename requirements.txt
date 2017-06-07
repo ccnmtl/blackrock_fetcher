@@ -1,7 +1,7 @@
 pexpect==4.2.1
 ptyprocess==0.5.1
 
-flake8==2.6.2
+flake8==3.3.0
 enum34==1.1.6
 configparser==3.5.0
 pycodestyle==2.0.0
