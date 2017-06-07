@@ -68,16 +68,12 @@ def fetch_file(remote_dir, local_dir):
     if DEBUG:
         print("cmd: %s" % (cmd))
 
-    try:
-        child = pexpect.spawn(cmd)
-        child.expect('password:')
-        child.sendline(SFTP_PASSWD)
-        # make sure to extend the timeout for long download times. 5
-        # min should do it.
-        child.expect(pexpect.EOF, timeout=600)
-    except:
-        print("SCP Error:", sys.exc_info()[0])
-        raise Exception()
+    child = pexpect.spawn(cmd)
+    child.expect('password:')
+    child.sendline(SFTP_PASSWD)
+    # make sure to extend the timeout for long download times. 5
+    # min should do it.
+    child.expect(pexpect.EOF, timeout=600)
 
 
 def fetch_files(remote_dir, local_dir):
@@ -89,16 +85,12 @@ def fetch_files(remote_dir, local_dir):
     if DEBUG:
         print("cmd: %s" % (cmd))
 
-    try:
-        child = pexpect.spawn(cmd)
-        child.expect('password:')
-        child.sendline(SFTP_PASSWD)
-        # make sure to extend the timeout for long download times. 5
-        # min should do it.
-        child.expect(pexpect.EOF, timeout=600)
-    except:
-        print("SCP Error:", sys.exc_info()[0])
-        raise Exception()
+    child = pexpect.spawn(cmd)
+    child.expect('password:')
+    child.sendline(SFTP_PASSWD)
+    # make sure to extend the timeout for long download times. 5
+    # min should do it.
+    child.expect(pexpect.EOF, timeout=600)
 
 
 def main(argv=None):
@@ -152,7 +144,7 @@ def main(argv=None):
     symlink = os.path.join(LOCAL_DIRECTORY_BASE, 'current')
     try:
         os.remove(symlink)
-    except:
+    except OSError:
         print('couldn\'t remove symlink: %s' % symlink)
 
     os.symlink(local_dir, symlink)
@@ -167,6 +159,7 @@ def main(argv=None):
         print(cmd)
 
     os.system(cmd)
+
 
 if __name__ == "__main__":
     sys.exit(main())
