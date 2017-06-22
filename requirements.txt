@@ -1,5 +1,5 @@
 pexpect==4.2.1
-ptyprocess==0.5.1
+ptyprocess==0.5.2
 
 flake8==2.6.2 # pyup: <3.0
 enum34==1.1.6
