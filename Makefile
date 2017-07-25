@@ -7,7 +7,7 @@ PY_SENTINAL ?= $(VE)/sentinal
 WHEEL_VERSION ?= 0.29.0
 VIRTUALENV ?= virtualenv.py
 SUPPORT_DIR ?= requirements/virtualenv_support/
-MAX_COMPLEXITY ?= 9
+MAX_COMPLEXITY ?= 10
 PY_DIRS ?= *.py tests --exclude virtualenv.py
 
 $(PY_SENTINAL): $(REQUIREMENTS) $(VIRTUALENV) $(SUPPORT_DIR)*
