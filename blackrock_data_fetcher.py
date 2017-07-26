@@ -152,15 +152,16 @@ def main(argv=None):
     except OSError:
         print('couldn\'t remove symlink: %s' % symlink)
 
-    os.symlink(local_dir, symlink)
-
-    if DEBUG:
-        print("Fetched.")
+    try:
+        os.symlink(local_dir, symlink)
+    except OSError:
+        print('couldn\'t make symlink: %s' % symlink)
 
     # purge downloads older than PURGE_OLDER_THAN
     cmd = "find %s -type f -mtime %s -exec rm -f {} \;" % (
         LOCAL_DIRECTORY_BASE, PURGE_OLDER_THAN)
     if DEBUG:
+        print("Fetched.")
         print(cmd)
 
     os.system(cmd)
