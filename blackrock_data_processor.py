@@ -114,8 +114,14 @@ def process_dendrometer_data(path, filename, rename_trees=None):
     #
     # Here are the columns we want to filter to:
     keep_columns = [
-        'TIMESTAMP', 'Red_Oak_1_AVG', 'Red_Oak_2_AVG', 'Red_Oak_3_AVG',
-        'Red_Oak_4_AVG', 'Red_Oak_5_AVG'
+        'TIMESTAMP',
+
+        'Red_Oak_1_AVG', 'Red_Oak_2_AVG', 'Red_Oak_3_AVG',
+        'Red_Oak_4_AVG', 'Red_Oak_5_AVG',
+
+        # Mailley's Mill
+        'Hemlock_1_AVG', 'Hemlock_2_AVG', 'Hemlock_3_AVG',
+        'Pine_1_AVG', 'Pine_2_AVG', 'Pine_3_AVG',
     ]
     newrows = filter_columns(keep_columns, rows)
 
