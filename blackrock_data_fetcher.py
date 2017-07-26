@@ -121,6 +121,7 @@ def main(argv=None):
     process_dendrometer_data(local_dir, 'Mnt_Misery_Table20.csv')
     process_dendrometer_data(local_dir, 'White_Oak_Table20.csv',
                              rename_trees='White_Oak')
+    process_dendrometer_data(local_dir, 'Mailley\'s_Mill_Table20Min.csv')
     process_environmental_data(local_dir, 'Lowland.csv',
                                start_dt=datetime(2016, 9, 10, 17))
 
