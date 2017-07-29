@@ -139,12 +139,6 @@ def process_dendrometer_data(path, filename, rename_trees=None):
             newrow.append(calc_avg([newrow[1], newrow[2], newrow[3],
                                     newrow[4], newrow[5]]))
 
-        if i == 0:
-            newrow.append('Site STD DEV')
-        else:
-            newrow.append(calc_std_dev([newrow[1], newrow[2], newrow[3],
-                                        newrow[4], newrow[5]]))
-
     outfile = os.path.join(PROCESSED_DATA_DIR, filename)
     with open(outfile, 'w') as csvfile:
         writer = csv.writer(csvfile, quoting=csv.QUOTE_NONNUMERIC)
