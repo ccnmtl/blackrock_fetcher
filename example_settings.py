@@ -33,7 +33,7 @@ CONVERT = '/usr/bin/convert'
 
 PURGE_OLDER_THAN = '+30'
 
-DEBUG = False
+DEBUG = True
 
 REMOTE_DIRECTORY = '/Camera_Photo'
 REMOTE_FILENAME = 'Lodge.jpg'
