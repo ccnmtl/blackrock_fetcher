@@ -23,7 +23,8 @@ import os.path
 from datetime import datetime
 import pexpect
 from blackrock_data_processor import (
-    process_dendrometer_data, process_environmental_data
+    process_dendrometer_data, process_environmental_data,
+    apply_formula_to_processed_dendrometer_data
 )
 
 try:
@@ -119,8 +120,26 @@ def main(argv=None):
         local_dir)
 
     process_dendrometer_data(local_dir, 'Mnt_Misery_Table20.csv')
+    apply_formula_to_processed_dendrometer_data(
+        'Mnt_Misery_Table20.csv',
+        # The DBH (diameter at breast height) for each of these
+        # trees on October 7th, 2016 at 2pm.
+        # Unit is centimeters.
+        [48.0, 40.1, 42.1, 46.0, 42.4],
+        # The dendrometer voltages at that same time.
+        [20.9, 19.23, 20.93, 316.5, 120.9])
+
     process_dendrometer_data(local_dir, 'White_Oak_Table20.csv',
                              rename_trees='White_Oak')
+    apply_formula_to_processed_dendrometer_data(
+        'White_Oak_Table20.csv',
+        # The DBH (diameter at breast height) for each of these
+        # trees on October 7th, 2016 at 2pm.
+        # Unit is centimeters.
+        [32.1, 33.3, 46.7, 30.0, 26.7],
+        # The dendrometer voltages at that same time.
+        [160.8, 71.33, 100.4, 277.4, 456.6])
+
     process_dendrometer_data(local_dir, 'Mailley\'s_Mill_Table20Min.csv')
     process_environmental_data(local_dir, 'Lowland.csv',
                                start_dt=datetime(2016, 9, 10, 17))
