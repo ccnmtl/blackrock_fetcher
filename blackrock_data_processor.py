@@ -23,6 +23,27 @@ def calc_std_dev(a):
     return math.sqrt(sum(distances) / float(len(distances)))
 
 
+def calc_rdh_delta(old_dbh, old_v, current_v):
+    """
+    Returns the change in RDH (radius at dendrometer height) between
+    the given voltage level at some point in time and the current
+    voltage level.
+
+    parameters:
+      old_dbh: diameter at breast height at some point in time
+      old_v: dendrometer voltage at that same point in time
+      current_v: current dendrometer voltage
+    """
+    # print('calc_rdh_delta:', old_dbh, old_v, current_v)
+
+    rdh0 = (old_dbh / 2) * 10000
+    rdh = rdh0 + ((current_v - old_v) * 5)
+    deltaR = rdh - rdh0
+
+    # print('calc_rdh_delta result:', deltaR)
+    return deltaR
+
+
 def filter_columns(keep_columns, rows):
     """Filter CSV-style data based on a list of column names.
 
@@ -132,12 +153,11 @@ def process_dendrometer_data(path, filename, rename_trees=None):
         newrows = filter_rows(newrows, datetime(2016, 9, 10, 17))
 
     for i, row in enumerate(newrows):
-        newrow = newrows[i]
         if i == 0:
-            newrow.append('Site AVG')
+            row.append('Site AVG')
         else:
-            newrow.append(calc_avg([newrow[1], newrow[2], newrow[3],
-                                    newrow[4], newrow[5]]))
+            row.append(calc_avg([row[1], row[2], row[3],
+                                 row[4], row[5]]))
 
     outfile = os.path.join(PROCESSED_DATA_DIR, filename)
     with open(outfile, 'w') as csvfile:
@@ -146,6 +166,35 @@ def process_dendrometer_data(path, filename, rename_trees=None):
             writer.writerow(row)
 
     print('Wrote to %s' % outfile)
+
+
+def apply_formula_to_processed_dendrometer_data(
+        filename, dbh_vals, voltage_vals):
+    fname = os.path.join(PROCESSED_DATA_DIR, filename)
+    rows = []
+    with open(fname, 'r') as csvfile:
+        reader = csv.reader(csvfile, quoting=csv.QUOTE_NONNUMERIC)
+        for row in reader:
+            rows += [row]
+
+    with open(fname, 'w') as csvfile:
+        writer = csv.writer(csvfile, quoting=csv.QUOTE_NONNUMERIC)
+        for j, row in enumerate(rows):
+            # Skip the header row
+            if j == 0:
+                continue
+            for i, x in enumerate(row):
+                if i > 0 and i < 6:
+                    # If this isn't the first column (the timestamp),
+                    # and it's not the last column (the site average),
+                    # then calculate the rdh delta for this value.
+                    row[i] = calc_rdh_delta(
+                        dbh_vals[i - 1],
+                        voltage_vals[i - 1],
+                        x)
+            writer.writerow(row)
+
+    print('Calculated RDH delta and wrote to %s' % fname)
 
 
 def process_environmental_data(path, filename, start_dt=None, end_dt=None):
