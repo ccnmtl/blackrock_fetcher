@@ -23,3 +23,8 @@ flake8: $(PY_SENTINAL)
 
 test: $(PY_SENTINAL)
 	$(VE)/bin/python -m tests.test_data_processor
+
+clean:
+	rm -rf ve
+
+.PHONY: clean
