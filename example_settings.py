@@ -10,6 +10,7 @@ REMOTE_CSV_DIRECTORY = '/Datalogger_Files'
 REMOTE_MOUNT_MISERY_DIRECTORY = '/Mount_Misery_LTP'
 REMOTE_WHITE_OAK_DIRECTORY = '/White_Oak_LTP'
 REMOTE_MAILLEYS_MILL_DIRECTORY = '/Mailley\\\'s_Mill'
+REMOTE_STREAM_DIRECTORY = '/Stream_Station'
 
 OL_EXPECTED_FILES_SET = set(
     ('OL_Air-Soil-7Day.png', 'OL_Air-Soil-24Hr.png', 'OL_Air-Soil-30Day.png',
