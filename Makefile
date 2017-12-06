@@ -1,21 +1,19 @@
 VE ?= ./ve
-FLAKE8 ?= $(VE)/bin/flake8
+FLAKE8 ?= $(VE)/bin/python -m flake8
 REQUIREMENTS ?= requirements.txt
-SYS_PYTHON ?= python
-PIP ?= $(VE)/bin/pip
+SYS_PYTHON ?= python3
+PIP ?= $(VE)/bin/python -m pip
 PY_SENTINAL ?= $(VE)/sentinal
 WHEEL_VERSION ?= 0.30.0
-VIRTUALENV ?= virtualenv.py
-SUPPORT_DIR ?= requirements/virtualenv_support/
+SUPPORT_DIR ?= requirements/
 MAX_COMPLEXITY ?= 10
-PY_DIRS ?= *.py tests --exclude virtualenv.py
+PY_DIRS ?= *.py tests
 
-$(PY_SENTINAL): $(REQUIREMENTS) $(VIRTUALENV) $(SUPPORT_DIR)*
+$(PY_SENTINAL):
 	rm -rf $(VE)
-	$(SYS_PYTHON) $(VIRTUALENV) --extra-search-dir=$(SUPPORT_DIR) --never-download $(VE)
+	$(SYS_PYTHON) -m venv $(VE)
 	$(PIP) install wheel==$(WHEEL_VERSION)
 	$(PIP) install --use-wheel --no-deps --requirement $(REQUIREMENTS)
-	$(SYS_PYTHON) $(VIRTUALENV) --relocatable $(VE)
 	touch $@
 
 flake8: $(PY_SENTINAL)
