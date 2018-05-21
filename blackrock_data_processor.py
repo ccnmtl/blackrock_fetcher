@@ -11,6 +11,7 @@ except ImportError:
 
 def calc_avg(a):
     """Returns the average of the given list of numbers."""
+    a = list(map(float, a))
     return sum(a) / float(len(a))
 
 
