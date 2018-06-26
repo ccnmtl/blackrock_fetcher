@@ -1,5 +1,5 @@
 pexpect==4.6.0
-ptyprocess==0.5.2
+ptyprocess==0.6.0
 
 flake8==3.5.0
 configparser==3.5.0
