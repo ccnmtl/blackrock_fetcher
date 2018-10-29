@@ -17,7 +17,7 @@ $(PY_SENTINAL):
 	touch $@
 
 flake8: $(PY_SENTINAL)
-	$(FLAKE8) $(PY_DIRS) --max-complexity=$(MAX_COMPLEXITY)
+	$(FLAKE8) $(PY_DIRS) --max-complexity=$(MAX_COMPLEXITY) --extend-ignore=W605
 
 test: $(PY_SENTINAL)
 	$(VE)/bin/python -m tests.test_data_processor
