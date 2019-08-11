@@ -2,7 +2,7 @@ pexpect==4.7.0
 ptyprocess==0.6.0
 
 flake8==3.7.8
-configparser==3.7.4
+configparser==3.7.5
 pycodestyle==2.5.0
 pyflakes==2.1.1
 mccabe==0.6.1
