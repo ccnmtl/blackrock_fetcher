@@ -13,7 +13,7 @@ $(PY_SENTINAL):
 	rm -rf $(VE)
 	$(SYS_PYTHON) -m venv $(VE)
 	$(PIP) install wheel==$(WHEEL_VERSION)
-	$(PIP) install --use-wheel --no-deps --requirement $(REQUIREMENTS)
+	$(PIP) install --no-deps --requirement $(REQUIREMENTS)
 	touch $@
 
 flake8: $(PY_SENTINAL)
