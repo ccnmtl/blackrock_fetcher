@@ -153,12 +153,21 @@ def process_dendrometer_data(path, filename, rename_trees=None):
     else:
         newrows = filter_rows(newrows, datetime(2016, 9, 10, 17))
 
-    for i, row in enumerate(newrows):
-        if i == 0:
-            row.append('Site AVG')
-        else:
-            row.append(calc_avg([row[1], row[2], row[3],
-                                 row[4], row[5]]))
+    if 'Mailley' in filename:
+        for i, row in enumerate(newrows):
+            if i == 0:
+                row.append('Hemlock AVG')
+                row.append('Pine AVG')
+            else:
+                row.append(calc_avg([row[1], row[2], row[3]])
+                row.append(calc_avg([row[4], row[5], row[6]])
+    else:
+        for i, row in enumerate(newrows):
+            if i == 0:
+                row.append('Site AVG')
+            else:
+                row.append(calc_avg([row[1], row[2], row[3],
+                                     row[4], row[5]]))
 
     outfile = os.path.join(PROCESSED_DATA_DIR, filename)
     with open(outfile, 'w') as csvfile:
