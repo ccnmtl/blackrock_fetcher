@@ -11,7 +11,7 @@ Here's how to create a virtualenv for the blackrock fetcher and set
 everything up for the cron job:
 
 ```
-pyenv local 3.6.3
+pyenv local 3.6.9
 python -m venv ve
 ./ve/bin/pip install -r requirements.txt
 ```
