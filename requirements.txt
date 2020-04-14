@@ -4,6 +4,6 @@ ptyprocess==0.6.0
 flake8==3.7.9
 configparser==5.0.0
 pycodestyle==2.5.0
-pyflakes==2.1.1
+pyflakes==2.2.0
 mccabe==0.6.1
 entrypoints==0.3
