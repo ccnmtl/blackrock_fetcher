@@ -29,7 +29,7 @@ from blackrock_data_processor import (
 
 try:
     from local_settings import (
-        SFTP_HOST, SFTP_USER, SFTP_PASSWD,
+        SFTP_HOST, SFTP_USER, SFTP_PORT, SFTP_PASSWD,
         OL_REMOTE_IMAGES_DIRECTORY, RT_REMOTE_IMAGES_DIRECTORY,
         REMOTE_CSV_DIRECTORY, REMOTE_MOUNT_MISERY_DIRECTORY,
         REMOTE_WHITE_OAK_DIRECTORY,
@@ -41,7 +41,7 @@ try:
     )
 except ImportError:
     from example_settings import (
-        SFTP_HOST, SFTP_USER, SFTP_PASSWD,
+        SFTP_HOST, SFTP_USER, SFTP_PORT, SFTP_PASSWD,
         OL_REMOTE_IMAGES_DIRECTORY, RT_REMOTE_IMAGES_DIRECTORY,
         REMOTE_CSV_DIRECTORY, REMOTE_MOUNT_MISERY_DIRECTORY,
         REMOTE_WHITE_OAK_DIRECTORY,
@@ -70,8 +70,8 @@ def fetch_file(remote_dir, local_dir):
     if DEBUG:
         print("Fetching %s to %s" % (remote_dir, local_dir))
 
-    cmd = '%s %s@%s:"%s" %s ' % (
-        SCP, SFTP_USER, SFTP_HOST, remote_dir, local_dir)
+    cmd = '%s -oPort=%s %s@%s:"%s" %s ' % (
+        SCP, SFTP_PORT, SFTP_USER, SFTP_HOST, remote_dir, local_dir)
     if DEBUG:
         print("cmd: %s" % (cmd))
 
@@ -87,8 +87,8 @@ def fetch_files(remote_dir, local_dir):
     if DEBUG:
         print("Fetching %s to %s" % (remote_dir, local_dir))
 
-    cmd = '%s %s@%s:"%s/*" %s ' % (
-        SCP, SFTP_USER, SFTP_HOST, remote_dir, local_dir)
+    cmd = '%s -oPort=%s %s@%s:"%s/*" %s ' % (
+        SCP, SFTP_PORT, SFTP_USER, SFTP_HOST, remote_dir, local_dir)
     if DEBUG:
         print("cmd: %s" % (cmd))
 
