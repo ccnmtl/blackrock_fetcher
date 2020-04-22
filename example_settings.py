@@ -2,6 +2,7 @@
 
 SFTP_HOST = ''
 SFTP_USER = ''
+SFTP_PORT = 22
 SFTP_PASSWD = ''
 
 OL_REMOTE_IMAGES_DIRECTORY = '/OL_Display_Screens'

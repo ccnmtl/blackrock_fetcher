@@ -26,14 +26,14 @@ import pexpect
 
 try:
     from local_settings import (
-        SFTP_HOST, SFTP_USER, SFTP_PASSWD,
+        SFTP_HOST, SFTP_USER, SFTP_PORT, SFTP_PASSWD,
         REMOTE_DIRECTORY, REMOTE_FILENAME,
         LOCAL_WEBCAM_DIRECTORY_BASE, LOCAL_FILENAME_PREFIX,
         SCP, CONVERT, DEBUG,
     )
 except ImportError:
     from example_settings import (
-        SFTP_HOST, SFTP_USER, SFTP_PASSWD,
+        SFTP_HOST, SFTP_USER, SFTP_PORT, SFTP_PASSWD,
         REMOTE_DIRECTORY, REMOTE_FILENAME,
         LOCAL_WEBCAM_DIRECTORY_BASE, LOCAL_FILENAME_PREFIX,
         SCP, CONVERT, DEBUG,
@@ -57,8 +57,8 @@ def fetch_image(remote_path, local_path):
     if DEBUG:
         print("Fetching %s to %s" % (remote_path, local_path))
 
-    cmd = '%s %s@%s:"%s" %s ' % (
-        SCP, SFTP_USER, SFTP_HOST, remote_path, local_path)
+    cmd = '%s -oPort=%s %s@%s:"%s" %s ' % (
+        SCP, SFTP_PORT, SFTP_USER, SFTP_HOST, remote_path, local_path)
     if DEBUG:
         print("cmd: %s" % (cmd))
 
