@@ -1,5 +1,5 @@
 pexpect==4.8.0
-ptyprocess==0.6.0
+ptyprocess==0.7.0
 
 importlib-metadata==3.3.0  # for flake8
 typing_extensions==3.7.4.3
