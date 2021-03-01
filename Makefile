@@ -9,6 +9,8 @@ SUPPORT_DIR ?= requirements/
 MAX_COMPLEXITY ?= 10
 PY_DIRS ?= *.py tests
 
+all: flake8 test
+
 $(PY_SENTINAL):
 	rm -rf $(VE)
 	$(SYS_PYTHON) -m venv $(VE)
@@ -25,4 +27,4 @@ test: $(PY_SENTINAL)
 clean:
 	rm -rf ve
 
-.PHONY: clean
+.PHONY: clean flake8 test

@@ -1,4 +1,4 @@
-# blackrock_fetcher [![Build Status](https://travis-ci.org/ccnmtl/blackrock_fetcher.svg?branch=master)](https://travis-ci.org/ccnmtl/blackrock_fetcher)
+# blackrock_fetcher [![Actions Status](https://github.com/ccnmtl/plexus/workflows/build-and-test/badge.svg)](https://github.com/ccnmtl/plexus/actions)
 data fetcher and processor for Blackrock forest
 
 ### Python compatibility
