@@ -7,6 +7,6 @@ zipp==3.4.1  # for flake8
 flake8==3.8.4
 configparser==5.0.2
 pycodestyle==2.6.0
-pyflakes==2.2.0
+pyflakes==2.3.0
 mccabe==0.6.1
 entrypoints==0.3
