@@ -1,17 +1,10 @@
 # Copy this file to local_settings.py and customize.
 
-SFTP_HOST = ''
-SFTP_USER = ''
-SFTP_PORT = 22
-SFTP_PASSWD = ''
-
-OL_REMOTE_IMAGES_DIRECTORY = '/OL_Display_Screens'
-RT_REMOTE_IMAGES_DIRECTORY = '/RT_Display_Screens'
-REMOTE_CSV_DIRECTORY = '/Datalogger_Files'
-REMOTE_MOUNT_MISERY_DIRECTORY = '/Mount_Misery_LTP'
-REMOTE_WHITE_OAK_DIRECTORY = '/White_Oak_LTP'
-REMOTE_MAILLEYS_MILL_DIRECTORY = '/Mailley\\\'s_Mill'
-REMOTE_STREAM_DIRECTORY = '/Stream_Station'
+API_KEY = 'AIzaSyCCUckCNKrrLgkSLVa2HwVboVeqWOQmC38'
+VIRTUAL_FOREST_ID = '1g7AuUZiwYQhM2RCS7ztFXtK6sH7NFk9J'
+METADATA_URI = ('https://www.googleapis.com/drive/v3/'
+                'files?q=%27{0}%27+in+parents&key={1}')
+FILE_URI = 'https://www.googleapis.com/drive/v3/files/{0}?alt=media&key={1}'
 
 OL_EXPECTED_FILES_SET = set(
     ('OL_Air-Soil-7Day.png', 'OL_Air-Soil-24Hr.png', 'OL_Air-Soil-30Day.png',
@@ -30,14 +23,15 @@ RT_EXPECTED_FILES_SET = set(
 
 LOCAL_DIRECTORY_BASE = '/tmp/blackrock/'
 
-SCP = '/usr/bin/sftp'
 CONVERT = '/usr/bin/convert'
 
 PURGE_OLDER_THAN = '+30'
 
 DEBUG = True
 
+# Remove when updating blackrock_photo_fetcher
 REMOTE_DIRECTORY = '/Camera_Photo'
+
 REMOTE_FILENAME = 'Lodge.jpg'
 LOCAL_WEBCAM_DIRECTORY_BASE = ''
 LOCAL_FILENAME_PREFIX = 'Black_Rock'

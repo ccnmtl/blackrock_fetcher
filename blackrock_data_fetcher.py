@@ -1,7 +1,10 @@
 #!ve/bin/python
 """
-This script fetches live data from the blackrock servers.
+Updated 2022-06-21: SFTP from a remote server changed to Google Drive
+API requests.
 
+This script fetches live data from the blackrock Google Drive server.
+=====================================================================
 The script is meant to be called from cron, with no arguments
 
 blackrock_data_fetcher.py
@@ -17,11 +20,12 @@ YYYY/MM/DD/HH/<FILENAMES>.jpg
 Jonah Bossewitch, CCNMTL
 
 """
+import requests
+
 import sys
 import os
 import os.path
 from datetime import datetime
-import pexpect
 from blackrock_data_processor import (
     process_dendrometer_data, process_environmental_data,
     apply_formula_to_processed_dendrometer_data
@@ -29,27 +33,19 @@ from blackrock_data_processor import (
 
 try:
     from local_settings import (
-        SFTP_HOST, SFTP_USER, SFTP_PORT, SFTP_PASSWD,
-        OL_REMOTE_IMAGES_DIRECTORY, RT_REMOTE_IMAGES_DIRECTORY,
-        REMOTE_CSV_DIRECTORY, REMOTE_MOUNT_MISERY_DIRECTORY,
-        REMOTE_WHITE_OAK_DIRECTORY,
-        REMOTE_MAILLEYS_MILL_DIRECTORY,
-        REMOTE_STREAM_DIRECTORY,
+        API_KEY, VIRTUAL_FOREST_ID,
+        METADATA_URI, FILE_URI,
         OL_EXPECTED_FILES_SET,
         RT_EXPECTED_FILES_SET, LOCAL_DIRECTORY_BASE,
-        SCP, PURGE_OLDER_THAN, DEBUG,
+        PURGE_OLDER_THAN, DEBUG,
     )
 except ImportError:
     from example_settings import (
-        SFTP_HOST, SFTP_USER, SFTP_PORT, SFTP_PASSWD,
-        OL_REMOTE_IMAGES_DIRECTORY, RT_REMOTE_IMAGES_DIRECTORY,
-        REMOTE_CSV_DIRECTORY, REMOTE_MOUNT_MISERY_DIRECTORY,
-        REMOTE_WHITE_OAK_DIRECTORY,
-        REMOTE_MAILLEYS_MILL_DIRECTORY,
-        REMOTE_STREAM_DIRECTORY,
+        API_KEY, VIRTUAL_FOREST_ID,
+        METADATA_URI, FILE_URI,
         OL_EXPECTED_FILES_SET,
         RT_EXPECTED_FILES_SET, LOCAL_DIRECTORY_BASE,
-        SCP, PURGE_OLDER_THAN, DEBUG,
+        PURGE_OLDER_THAN, DEBUG,
     )
 
 
@@ -66,38 +62,26 @@ def create_local_directories(today):
     return d
 
 
-def fetch_file(remote_dir, local_dir):
+def fetch_files(local_dir):
     if DEBUG:
-        print("Fetching %s to %s" % (remote_dir, local_dir))
+        print("Fetching from Google Drive to %s" % (local_dir))
+    virtual_forest = get_api_response(METADATA_URI, VIRTUAL_FOREST_ID)
+    items = virtual_forest.json()['files']
+    for item in items:
+        # If the item is a folder, add the folder contents to the item list
+        if item['mimeType'] == 'application/vnd.google-apps.folder':
+            subfolder = get_api_response(METADATA_URI, item['id'])
+            for subitem in subfolder.json()['files']:
+                items.append(subitem)
+        else:
+            # Found a file, proceed to download
+            to_download = get_api_response(FILE_URI, item['id'])
+            open('%s/%s' % (local_dir, item['name']),
+                 'wb').write(to_download.content)
 
-    cmd = '%s -oPort=%s %s@%s:"%s" %s ' % (
-        SCP, SFTP_PORT, SFTP_USER, SFTP_HOST, remote_dir, local_dir)
-    if DEBUG:
-        print("cmd: %s" % (cmd))
 
-    child = pexpect.spawn(cmd)
-    child.expect('password:')
-    child.sendline(SFTP_PASSWD)
-    # make sure to extend the timeout for long download times. 5
-    # min should do it.
-    child.expect(pexpect.EOF, timeout=600)
-
-
-def fetch_files(remote_dir, local_dir):
-    if DEBUG:
-        print("Fetching %s to %s" % (remote_dir, local_dir))
-
-    cmd = '%s -oPort=%s %s@%s:"%s/*" %s ' % (
-        SCP, SFTP_PORT, SFTP_USER, SFTP_HOST, remote_dir, local_dir)
-    if DEBUG:
-        print("cmd: %s" % (cmd))
-
-    child = pexpect.spawn(cmd)
-    child.expect('password:')
-    child.sendline(SFTP_PASSWD)
-    # make sure to extend the timeout for long download times. 5
-    # min should do it.
-    child.expect(pexpect.EOF, timeout=600)
+def get_api_response(uri, file_ID):
+    return requests.get(uri.format(file_ID, API_KEY))
 
 
 def main(argv=None):
@@ -106,21 +90,7 @@ def main(argv=None):
 
     local_dir = create_local_directories(today)
 
-    fetch_files(OL_REMOTE_IMAGES_DIRECTORY, local_dir)
-    fetch_files(RT_REMOTE_IMAGES_DIRECTORY, local_dir)
-    fetch_files(REMOTE_CSV_DIRECTORY, local_dir)
-    fetch_files(REMOTE_MOUNT_MISERY_DIRECTORY, local_dir)
-    fetch_files(REMOTE_WHITE_OAK_DIRECTORY, local_dir)
-    fetch_files(REMOTE_MAILLEYS_MILL_DIRECTORY, local_dir)
-    fetch_files(REMOTE_STREAM_DIRECTORY, local_dir)
-
-    # There is a Lowland.csv file in both REMOTE_CSV_DIRECTORY
-    # and OL_REMOTE_IMAGES_DIRECTORY. Only the one in
-    # OL_REMOTE_IMAGES_DIRECTORY is automatically updated,
-    # so make sure we always end up with that one.
-    fetch_file(
-        os.path.join(OL_REMOTE_IMAGES_DIRECTORY, 'Lowland.csv'),
-        local_dir)
+    fetch_files(local_dir)
 
     process_dendrometer_data(local_dir, 'Mnt_Misery_Table20.csv')
     apply_formula_to_processed_dendrometer_data(
