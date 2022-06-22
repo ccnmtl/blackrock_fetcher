@@ -62,26 +62,34 @@ def create_local_directories(today):
     return d
 
 
+def find_files(items):
+    """
+    Runs in fetch_files()
+    Recursively creates a list of files present in current and sub directories
+    """
+    file_list = []
+    for item in items:
+        if item['mimeType'] == 'application/vnd.google-apps.folder':
+            subfolder = get_api_response(METADATA_URI, item['id'])
+            file_list.extend(find_files(subfolder.json()['files']))
+        else:
+            file_list.append(item)
+    return file_list
+
+
 def fetch_files(local_dir):
     if DEBUG:
         print("Fetching from Google Drive to %s" % (local_dir))
     virtual_forest = get_api_response(METADATA_URI, VIRTUAL_FOREST_ID)
-    items = virtual_forest.json()['files']
-    for item in items:
-        # If the item is a folder, add the folder contents to the item list
-        if item['mimeType'] == 'application/vnd.google-apps.folder':
-            subfolder = get_api_response(METADATA_URI, item['id'])
-            for subitem in subfolder.json()['files']:
-                items.append(subitem)
-        else:
-            # Found a file, proceed to download
-            to_download = get_api_response(FILE_URI, item['id'])
-            open('%s/%s' % (local_dir, item['name']),
-                 'wb').write(to_download.content)
+    download_files = find_files(virtual_forest.json()['files'])
+    for item in download_files:
+        to_download = get_api_response(FILE_URI, item['id'])
+        open('%s/%s' % (local_dir, item['name']),
+             'wb').write(to_download.content)
 
 
-def get_api_response(uri, file_ID):
-    return requests.get(uri.format(file_ID, API_KEY))
+def get_api_response(uri, file_id):
+    return requests.get(uri.format(file_id, API_KEY))
 
 
 def main(argv=None):
