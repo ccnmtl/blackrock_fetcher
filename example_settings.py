@@ -1,6 +1,6 @@
 # Copy this file to local_settings.py and customize.
 
-API_KEY = 'AIzaSyCCUckCNKrrLgkSLVa2HwVboVeqWOQmC38'
+API_KEY = '<INSERT_API_KEY>'
 VIRTUAL_FOREST_ID = '1g7AuUZiwYQhM2RCS7ztFXtK6sH7NFk9J'
 METADATA_URI = ('https://www.googleapis.com/drive/v3/'
                 'files?q=%27{0}%27+in+parents&key={1}')
