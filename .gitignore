@@ -90,3 +90,4 @@ ENV/
 .ropeproject
 
 local_settings.py
+tests/test_api.py

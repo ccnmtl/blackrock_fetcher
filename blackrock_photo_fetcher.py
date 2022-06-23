@@ -17,26 +17,26 @@ YYYY/MM/DD/<FILENAME>_HOUR_MIN.jpg
 Jonah Bossewitch, CCNMTL
 
 """
+import requests
 import sys
 import os
 import os.path
 from subprocess import call
 import datetime
-import pexpect
 
 try:
     from local_settings import (
-        SFTP_HOST, SFTP_USER, SFTP_PORT, SFTP_PASSWD,
-        REMOTE_DIRECTORY, REMOTE_FILENAME,
+        API_KEY, VIRTUAL_FOREST_ID,
+        METADATA_URI, FILE_URI, REMOTE_FILENAME,
         LOCAL_WEBCAM_DIRECTORY_BASE, LOCAL_FILENAME_PREFIX,
-        SCP, CONVERT, DEBUG,
+        CONVERT, DEBUG,
     )
 except ImportError:
     from example_settings import (
-        SFTP_HOST, SFTP_USER, SFTP_PORT, SFTP_PASSWD,
-        REMOTE_DIRECTORY, REMOTE_FILENAME,
+        API_KEY, VIRTUAL_FOREST_ID,
+        METADATA_URI, FILE_URI, REMOTE_FILENAME,
         LOCAL_WEBCAM_DIRECTORY_BASE, LOCAL_FILENAME_PREFIX,
-        SCP, CONVERT, DEBUG,
+        CONVERT, DEBUG,
     )
 
 
@@ -53,19 +53,30 @@ def create_local_directories(today):
     return d
 
 
-def fetch_image(remote_path, local_path):
-    if DEBUG:
-        print("Fetching %s to %s" % (remote_path, local_path))
+def find_file_id(directory_id):
+    found = None
+    subfolder = []
+    response = requests.get(METADATA_URI.format(directory_id, API_KEY))
+    for item in response.json()['files']:
+        if item['mimeType'] == 'application/vnd.google-apps.folder':
+            subfolder.append(item['id'])
+        if item['name'] == REMOTE_FILENAME:
+            found = item['id']
+    i = 0
+    while found is None and i < len(subfolder):
+        find_file_id(subfolder[i])
+    return found
 
-    cmd = '%s -oPort=%s %s@%s:"%s" %s ' % (
-        SCP, SFTP_PORT, SFTP_USER, SFTP_HOST, remote_path, local_path)
-    if DEBUG:
-        print("cmd: %s" % (cmd))
 
-    child = pexpect.spawn(cmd)
-    child.expect('password:')
-    child.sendline(SFTP_PASSWD)
-    child.expect(pexpect.EOF)
+def fetch_image(local_path):
+    if DEBUG:
+        print("Fetching {0} from Google Drive to {1}".
+              format(REMOTE_FILENAME, local_path))
+    found = find_file_id(VIRTUAL_FOREST_ID)
+    if found is None:
+        raise NameError('%s not found in GDrive' % (REMOTE_FILENAME))
+    response = requests.get(FILE_URI.format(found, API_KEY))
+    open('{0}'.format(local_path), 'wb').write(response.content)
 
 
 def main(argv=None):
@@ -78,10 +89,9 @@ def main(argv=None):
     new_filename = "%s_%s.jpg" % (LOCAL_FILENAME_PREFIX, hour_min)
     new_thumbname = "%s_%s_thumb.jpg" % (LOCAL_FILENAME_PREFIX, hour_min)
 
-    remote_path = "%s/%s" % (REMOTE_DIRECTORY, REMOTE_FILENAME)
     local_path = "%s/%s" % (local_dir, new_filename)
     local_thumb_path = "%s/%s" % (local_dir, new_thumbname)
-    fetch_image(remote_path, local_path)
+    fetch_image(local_path)
 
     # create a thumbnail
     call([CONVERT,

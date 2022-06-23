@@ -21,7 +21,6 @@ Jonah Bossewitch, CCNMTL
 
 """
 import requests
-
 import sys
 import os
 import os.path

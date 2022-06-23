@@ -29,9 +29,6 @@ PURGE_OLDER_THAN = '+30'
 
 DEBUG = True
 
-# Remove when updating blackrock_photo_fetcher
-REMOTE_DIRECTORY = '/Camera_Photo'
-
 REMOTE_FILENAME = 'Lodge.jpg'
 LOCAL_WEBCAM_DIRECTORY_BASE = ''
 LOCAL_FILENAME_PREFIX = 'Black_Rock'
