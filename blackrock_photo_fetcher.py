@@ -65,6 +65,7 @@ def find_file_id(directory_id):
     i = 0
     while found is None and i < len(subfolder):
         find_file_id(subfolder[i])
+        i += 1
     return found
 
 
