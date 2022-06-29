@@ -17,26 +17,33 @@ YYYY/MM/DD/<FILENAME>_HOUR_MIN.jpg
 Jonah Bossewitch, CCNMTL
 
 """
-import requests
+from __future__ import print_function
+
 import sys
+import io
 import os
 import os.path
 from subprocess import call
 import datetime
 
+from google.auth.transport.requests import Request
+from google.oauth2.credentials import Credentials
+from google_auth_oauthlib.flow import InstalledAppFlow
+from googleapiclient.discovery import build
+from googleapiclient.errors import HttpError
+from googleapiclient.http import MediaIoBaseDownload
+
 try:
     from local_settings import (
-        API_KEY, VIRTUAL_FOREST_ID,
-        METADATA_URI, FILE_URI, REMOTE_FILENAME,
-        LOCAL_WEBCAM_DIRECTORY_BASE, LOCAL_FILENAME_PREFIX,
-        CONVERT, DEBUG,
+        SCOPES, REMOTE_FILENAME,
+        LOCAL_WEBCAM_DIRECTORY_BASE,
+        LOCAL_FILENAME_PREFIX, CONVERT, DEBUG,
     )
 except ImportError:
     from example_settings import (
-        API_KEY, VIRTUAL_FOREST_ID,
-        METADATA_URI, FILE_URI, REMOTE_FILENAME,
-        LOCAL_WEBCAM_DIRECTORY_BASE, LOCAL_FILENAME_PREFIX,
-        CONVERT, DEBUG,
+        SCOPES, REMOTE_FILENAME,
+        LOCAL_WEBCAM_DIRECTORY_BASE,
+        LOCAL_FILENAME_PREFIX, CONVERT, DEBUG,
     )
 
 
@@ -53,31 +60,66 @@ def create_local_directories(today):
     return d
 
 
-def find_file_id(directory_id):
-    found = None
-    subfolder = []
-    response = requests.get(METADATA_URI.format(directory_id, API_KEY))
-    for item in response.json()['files']:
-        if item['mimeType'] == 'application/vnd.google-apps.folder':
-            subfolder.append(item['id'])
-        if item['name'] == REMOTE_FILENAME:
-            found = item['id']
-    i = 0
-    while found is None and i < len(subfolder):
-        find_file_id(subfolder[i])
-        i += 1
-    return found
+def get_credentials():
+    # The file token.json stores the user's access and refresh tokens, and is
+    # created automatically when the authorization flow completes for the first
+    # time.
+    creds = None
+    if os.path.exists('token.json'):
+        creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+    # If there are no (valid) credentials available, let the user log in.
+    if not creds or not creds.valid:
+        if creds and creds.expired and creds.refresh_token:
+            creds.refresh(Request())
+        else:
+            flow = InstalledAppFlow.from_client_secrets_file(
+                'credentials.json', SCOPES)
+            creds = flow.run_local_server(port=0)
+            # Save the credentials for the next run
+            with open('token.json', 'w') as token:
+                token.write(creds.to_json())
+    return creds
+
+
+def copy_photo_to_dir(service, file_metadata, local_path):
+    try:
+        request = service.files().get_media(fileId=file_metadata['id'])
+        to_download = io.BytesIO()
+        downloader = MediaIoBaseDownload(to_download, request)
+        done = False
+        while done is False:
+            try:
+                status, done = downloader.next_chunk()
+                if DEBUG:
+                    print(file_metadata['name'])
+                    open(local_path, 'wb').write(to_download.getvalue())
+            except UnicodeDecodeError as error:
+                print(F"Corrupted File - {file_metadata['name']}  - {error}")
+                done = False
+    except HttpError as error:
+        print(f'An error occurred: {error}')
+        to_download = None
 
 
 def fetch_image(local_path):
-    if DEBUG:
-        print("Fetching {0} from Google Drive to {1}".
-              format(REMOTE_FILENAME, local_path))
-    found = find_file_id(VIRTUAL_FOREST_ID)
-    if found is None:
-        raise NameError('%s not found in GDrive' % (REMOTE_FILENAME))
-    response = requests.get(FILE_URI.format(found, API_KEY))
-    open('{0}'.format(local_path), 'wb').write(response.content)
+    creds = get_credentials()
+    try:
+        service = build('drive', 'v3', credentials=creds)
+        # Call the Drive v3 API
+        results = service.files().list(
+             fields="nextPageToken, files(id, name, mimeType)").execute()
+        items = results.get('files', [])
+        if not items:
+            if DEBUG:
+                print('No files found.')
+            return None
+        if DEBUG:
+            print('Searching:')
+        for item in items:
+            if item['name'] == REMOTE_FILENAME:
+                copy_photo_to_dir(service, item, local_path)
+    except HttpError as error:
+        print(f'An error occurred: {error}')
 
 
 def main(argv=None):

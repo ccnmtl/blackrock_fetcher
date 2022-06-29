@@ -1,8 +1,5 @@
 #!ve/bin/python
 """
-Updated 2022-06-21: SFTP from a remote server changed to Google Drive
-API requests.
-
 This script fetches live data from the blackrock Google Drive server.
 =====================================================================
 The script is meant to be called from cron, with no arguments
@@ -18,13 +15,23 @@ We will store the photos in a directory structure like
 YYYY/MM/DD/HH/<FILENAMES>.jpg
 
 Jonah Bossewitch, CCNMTL
-
+Modified: 2022_06_28, Evan Petersen, CTL
 """
-import requests
+from __future__ import print_function
+
 import sys
+import io
 import os
 import os.path
 from datetime import datetime
+
+from google.auth.transport.requests import Request
+from google.oauth2.credentials import Credentials
+from google_auth_oauthlib.flow import InstalledAppFlow
+from googleapiclient.discovery import build
+from googleapiclient.errors import HttpError
+from googleapiclient.http import MediaIoBaseDownload
+
 from blackrock_data_processor import (
     process_dendrometer_data, process_environmental_data,
     apply_formula_to_processed_dendrometer_data
@@ -32,19 +39,15 @@ from blackrock_data_processor import (
 
 try:
     from local_settings import (
-        API_KEY, VIRTUAL_FOREST_ID,
-        METADATA_URI, FILE_URI,
-        OL_EXPECTED_FILES_SET,
-        RT_EXPECTED_FILES_SET, LOCAL_DIRECTORY_BASE,
-        PURGE_OLDER_THAN, DEBUG,
+        SCOPES, DIR_MIMETYPE, ACCEPTED_FILETYPES,
+        OL_EXPECTED_FILES_SET, RT_EXPECTED_FILES_SET,
+        LOCAL_DIRECTORY_BASE, PURGE_OLDER_THAN, DEBUG,
     )
 except ImportError:
     from example_settings import (
-        API_KEY, VIRTUAL_FOREST_ID,
-        METADATA_URI, FILE_URI,
-        OL_EXPECTED_FILES_SET,
-        RT_EXPECTED_FILES_SET, LOCAL_DIRECTORY_BASE,
-        PURGE_OLDER_THAN, DEBUG,
+        SCOPES, DIR_MIMETYPE, ACCEPTED_FILETYPES,
+        OL_EXPECTED_FILES_SET, RT_EXPECTED_FILES_SET,
+        LOCAL_DIRECTORY_BASE, PURGE_OLDER_THAN, DEBUG,
     )
 
 
@@ -61,34 +64,74 @@ def create_local_directories(today):
     return d
 
 
-def find_files(items):
-    """
-    Runs in fetch_files()
-    Recursively creates a list of files present in current and sub directories
-    """
-    file_list = []
-    for item in items:
-        if item['mimeType'] == 'application/vnd.google-apps.folder':
-            subfolder = get_api_response(METADATA_URI, item['id'])
-            file_list.extend(find_files(subfolder.json()['files']))
+def get_credentials():
+    # The file token.json stores the user's access and refresh tokens, and is
+    # created automatically when the authorization flow completes for the first
+    # time.
+    creds = None
+    if os.path.exists('token.json'):
+        creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+    # If there are no (valid) credentials available, let the user log in.
+    if not creds or not creds.valid:
+        if creds and creds.expired and creds.refresh_token:
+            creds.refresh(Request())
         else:
-            file_list.append(item)
-    return file_list
+            flow = InstalledAppFlow.from_client_secrets_file(
+                'credentials.json', SCOPES)
+            creds = flow.run_local_server(port=0)
+            # Save the credentials for the next run
+            with open('token.json', 'w') as token:
+                token.write(creds.to_json())
+    return creds
+
+
+def check_format(filename):
+    for filetype in ACCEPTED_FILETYPES:
+        if filename.endswith(filetype):
+            return True
+    return False
+
+
+def copy_file_to_dir(service, file_metadata, local_dir):
+    try:
+        request = service.files().get_media(fileId=file_metadata['id'])
+        to_download = io.BytesIO()
+        downloader = MediaIoBaseDownload(to_download, request)
+        done = False
+        while done is False:
+            try:
+                status, done = downloader.next_chunk()
+                if DEBUG:
+                    print(file_metadata['name'])
+                    open(F"{local_dir}/{file_metadata['name']}",
+                         'wb').write(to_download.getvalue())
+            except UnicodeDecodeError as error:
+                print(F"Corrupted File - {file_metadata['name']}  - {error}")
+                done = False
+    except HttpError as error:
+        print(f'An error occurred: {error}')
+        to_download = None
 
 
 def fetch_files(local_dir):
-    if DEBUG:
-        print("Fetching from Google Drive to %s" % (local_dir))
-    virtual_forest = get_api_response(METADATA_URI, VIRTUAL_FOREST_ID)
-    download_files = find_files(virtual_forest.json()['files'])
-    for item in download_files:
-        to_download = get_api_response(FILE_URI, item['id'])
-        open('%s/%s' % (local_dir, item['name']),
-             'wb').write(to_download.content)
-
-
-def get_api_response(uri, file_id):
-    return requests.get(uri.format(file_id, API_KEY))
+    creds = get_credentials()
+    try:
+        service = build('drive', 'v3', credentials=creds)
+        # Call the Drive v3 API
+        results = service.files().list(
+             fields="nextPageToken, files(id, name, mimeType)").execute()
+        items = results.get('files', [])
+        if not items:
+            if DEBUG:
+                print('No files found.')
+            return None
+        if DEBUG:
+            print('Files:')
+        for item in items:
+            if item['mimeType'] != DIR_MIMETYPE and check_format(item['name']):
+                copy_file_to_dir(service, item, local_dir)
+    except HttpError as error:
+        print(f'An error occurred: {error}')
 
 
 def main(argv=None):
