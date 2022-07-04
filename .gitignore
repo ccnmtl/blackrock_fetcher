@@ -90,3 +90,8 @@ ENV/
 .ropeproject
 
 local_settings.py
+
+# Google Drive Edits
+tests/OLD_test_api.py
+credentials.json
+token.json

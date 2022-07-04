@@ -1,10 +1,8 @@
 # Copy this file to local_settings.py and customize.
 
-API_KEY = '<INSERT_API_KEY>'
-VIRTUAL_FOREST_ID = '1g7AuUZiwYQhM2RCS7ztFXtK6sH7NFk9J'
-METADATA_URI = ('https://www.googleapis.com/drive/v3/'
-                'files?q=%27{0}%27+in+parents&key={1}')
-FILE_URI = 'https://www.googleapis.com/drive/v3/files/{0}?alt=media&key={1}'
+DIR_MIMETYPE = 'application/vnd.google-apps.folder'
+SCOPES = ['https://www.googleapis.com/auth/drive.readonly']
+ACCEPTED_FILETYPES = ['.csv', '.png']
 
 OL_EXPECTED_FILES_SET = set(
     ('OL_Air-Soil-7Day.png', 'OL_Air-Soil-24Hr.png', 'OL_Air-Soil-30Day.png',
@@ -28,9 +26,6 @@ CONVERT = '/usr/bin/convert'
 PURGE_OLDER_THAN = '+30'
 
 DEBUG = True
-
-# Remove when updating blackrock_photo_fetcher
-REMOTE_DIRECTORY = '/Camera_Photo'
 
 REMOTE_FILENAME = 'Lodge.jpg'
 LOCAL_WEBCAM_DIRECTORY_BASE = ''
