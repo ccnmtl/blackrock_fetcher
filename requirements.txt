@@ -3,7 +3,7 @@ google-api-python-client==2.0 # for Google Drive API
 ptyprocess==0.7.0
 
 importlib-metadata<4.3  # for flake8
-typing_extensions==4.1.1
+typing_extensions==4.3.0
 zipp==3.6.0  # for flake8
 flake8==4.0.1
 configparser==5.2.0
