@@ -1,4 +1,4 @@
-google-api-python-client==2.0.2 # for Google Drive API
+google-api-python-client==2.52.0 # for Google Drive API
 google-auth-oauthlib>=0.5.2
 
 ptyprocess==0.7.0
