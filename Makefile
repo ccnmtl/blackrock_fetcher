@@ -27,4 +27,9 @@ test: $(PY_SENTINAL)
 clean:
 	rm -rf ve
 
-.PHONY: clean flake8 test
+cunix:
+	pyenv local 3.6.9
+	python -m venv ve
+	./ve/bin/pip install -r requirements.txt 
+
+.PHONY: clean flake8 test cunix
