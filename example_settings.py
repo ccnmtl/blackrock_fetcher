@@ -32,3 +32,5 @@ LOCAL_WEBCAM_DIRECTORY_BASE = ''
 LOCAL_FILENAME_PREFIX = 'Black_Rock'
 
 PROCESSED_DATA_DIR = '/tmp/processed/'
+# Explicit Directory required for cron job during production
+ACCESS_DIR = '/Users/<user_profile>/blackrock_fetcher/'
