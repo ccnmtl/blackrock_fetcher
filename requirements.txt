@@ -3,7 +3,7 @@ google-auth-oauthlib>=0.5.2
 
 ptyprocess==0.7.0
 
-importlib-metadata<8.6  # for flake8
+importlib-metadata<8.7  # for flake8
 typing_extensions==4.12.2
 zipp==3.20.2  # for flake8
 flake8==7.1.1
