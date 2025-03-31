@@ -8,7 +8,7 @@ typing_extensions==4.12.2
 zipp==3.20.2  # for flake8
 flake8==7.2.0
 configparser==7.2.0
-pycodestyle==2.12.1
+pycodestyle==2.13.0
 pyflakes==3.2.0
 mccabe==0.7.0
 entrypoints==0.4
